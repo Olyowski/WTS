@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>AMT General Test Prep | Warren Tech Aviation</title>
+<title>AMT General Instructor Tools | Warren Tech Aviation</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Teko:wght@400;500;600&family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -265,6 +265,22 @@ footer{max-width:1120px;margin:0 auto;padding:0 24px 30px;font-size:13px;color:v
 #bList.hideans .bopt.right .l{background:var(--tint);color:inherit}
 #bList.hideans .ex{display:none}
 
+
+/* Instructor panel */
+@media (max-width:860px){.setup .panel{order:-1;position:static}}
+.istat{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;background:var(--tint);border-radius:12px;padding:12px 14px;margin:0 0 18px}
+.istat b{font-family:"Teko",sans-serif;font-size:40px;line-height:.8;font-weight:500;color:var(--deep);vertical-align:-6px;margin-right:4px}
+:root[data-theme="dark"] .istat b{color:var(--bright)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .istat b{color:var(--bright)}}
+.istat span{font-weight:600}
+.ilinks button{background:none;border:0;color:var(--bright);font-weight:700;cursor:pointer;padding:4px 6px;border-radius:6px}
+.ilinks button:hover{text-decoration:underline}
+.ilinks button:disabled{opacity:.4;cursor:not-allowed;text-decoration:none}
+.ihead{font-size:15px;font-weight:700;margin:0 0 10px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.ibtns{display:grid;gap:8px;margin:4px 0 0}
+.ibtns .btn{width:100%;text-align:center}
+.imsg{font-size:15px;min-height:1.4em;margin:10px 0 6px;color:var(--pass);font-weight:600}
+.imsg.bad{color:var(--fail)}
 /* Pick questions for a Google Form */
 .bhead{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap}
 .pick{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line);background:var(--card);border-radius:99px;padding:5px 14px 5px 10px;font-size:14px;font-weight:700;cursor:pointer;user-select:none;white-space:nowrap}
@@ -305,9 +321,9 @@ body.hastray footer{padding-bottom:100px}
 <body>
 <header class="hd">
   <div class="hd-in">
-    <div class="brand">WARREN TECH AVIATION</div>
-    <h1>AMT General Test Prep</h1>
-    <p>Practice sets and written exam simulation built on the Aviation Maintenance Technician Handbook–General (FAA-H-8083-30A), with the full 701-question General bank and its figures.</p>
+    <div class="brand">WARREN TECH AVIATION &middot; FOR INSTRUCTORS</div>
+    <h1>AMT General Instructor Tools</h1>
+    <p>Build Google Form quizzes from the full FAA Aviation Mechanic General question bank, with the figures, answer key, and explanations included.</p>
   </div>
 </header>
 
@@ -317,21 +333,19 @@ body.hastray footer{padding-bottom:100px}
     <div class="setup">
       <div class="card chaps">
         <div class="chaps-head">
-          <h2>Choose chapters</h2>
+          <h2>Chapters</h2>
           <div class="linkbtns"><button type="button" id="allBtn">Select all</button><button type="button" id="noneBtn">Clear</button></div>
         </div>
         <ul class="chlist" id="chlist"></ul>
-        <p class="hint" style="margin:4px 8px 10px">Tap a chapter to add it to your set. Tap <strong>View</strong> to see every question in that chapter in number order.<br><strong>Instructors:</strong> in <strong>View</strong>, check <strong>Add to form</strong> on the questions you want, then tap <strong>Make Google Form</strong>.</p>
+        <p class="hint" style="margin:4px 8px 10px">Tap a chapter to include it in a random set. Tap <strong>View</strong> to see that chapter's questions and pick them one by one.</p>
       </div>
 
       <div class="card panel">
-        <div class="seg" role="group" aria-label="Test mode">
-          <button type="button" id="mPractice" aria-pressed="true">Practice set</button>
-          <button type="button" id="mExam" aria-pressed="false">Written exam simulation</button>
-        </div>
-        <p class="modenote" id="modeNote"></p>
+        <h2>Build a Google Form</h2>
+        <div class="istat"><span><b id="iCount">0</b> <span id="iCountLbl">questions in your form</span></span><span class="ilinks"><button type="button" id="iReview">Review</button><button type="button" id="iClear">Clear</button></span></div>
 
-         <div class="field">
+        <h3 class="ihead">Add a random set</h3>
+        <div class="field">
           <label class="lbl" for="countNum">Number of questions</label>
           <div class="countrow">
             <input type="range" id="countRange" min="1" max="60" value="20" aria-label="Number of questions">
@@ -339,18 +353,22 @@ body.hastray footer{padding-bottom:100px}
           </div>
           <div class="hint" id="countHint"></div>
         </div>
-
-        <label class="tog" id="fbTog"><input type="checkbox" id="optFeedback" checked><span>Show the answer and explanation after each question</span></label>
-        <label class="tog" id="timeTog"><input type="checkbox" id="optTimer"><span>Time me at the FAA pace (2 minutes per question)</span></label>
-
         <label class="tog" id="figTog"><input type="checkbox" id="optFigOnly"><span>Only questions that use a figure</span></label>
+        <div class="ibtns"><button type="button" class="btn sec" id="iRand">Add random set</button><button type="button" class="btn sec" id="iAll">Add every question in the selected chapters</button></div>
+        <p class="imsg" id="iMsg" role="status"></p>
 
-        <button class="go" id="startBtn" type="button">Start practice set</button>
-        <div class="warn" id="warn" role="status"></div>
+        <button class="go" id="iMake" type="button">Make Google Form</button>
+        <p class="hint" style="margin-top:10px">Random sets are spread evenly across the chapters you select and skip questions already in your form. To hand-pick, tap <strong>View</strong> on a chapter.</p>
+
+        <div hidden>
+          <button type="button" id="mPractice"></button><button type="button" id="mExam"></button><p id="modeNote"></p>
+          <label id="fbTog"><input type="checkbox" id="optFeedback"></label><label id="timeTog"><input type="checkbox" id="optTimer"></label>
+          <button id="startBtn" type="button"></button><div id="warn"></div>
+        </div>
       </div>
     </div>
 
-    <div class="card hist" id="histCard" hidden>
+    <div class="card hist" id="histCard" hidden style="display:none!important">
       <div class="chaps-head">
         <h2>Recent attempts on this device</h2>
         <div class="linkbtns"><button type="button" id="clearHist">Clear history</button></div>
@@ -447,7 +465,7 @@ body.hastray footer{padding-bottom:100px}
   </section>
 </main>
 
-<footer>Questions are organized by FAA question number into the handbook chapters. The FAA Aviation Mechanic General knowledge test is 60 questions in 2 hours with a 70% minimum passing score.</footer>
+<footer>Questions are organized by FAA question number into the handbook chapters. Forms are created in the Google Drive of the instructor who clicks Create form.</footer>
 
 <div class="ov" id="ov" hidden><div class="modal" role="dialog" aria-modal="true" aria-labelledby="mTitle"><h3 id="mTitle"></h3><p id="mBody"></p><div class="row" id="mRow"></div></div></div>
 
@@ -833,8 +851,9 @@ document.addEventListener("keydown", e=>{ if(e.key==="Escape"){ $("#ov").hidden=
 
 /* ---------- browse a chapter (all questions in number order) ---------- */
 let bChap = null;
-$("#bCh").innerHTML = Object.keys(CH).map(k=>`<option value="${k}">${k}. ${esc(CH[k])}</option>`).join("");
+$("#bCh").innerHTML = `<option value="0">Your form questions</option>` + Object.keys(CH).map(k=>`<option value="${k}">${k}. ${esc(CH[k])}</option>`).join("");
 function openBrowse(c, findNum){
+  if(+c===0 && !findNum) return openPicked();
   bChap = +c;
   $("#bCh").value = c;
   $("#bTitle").textContent = `Chapter ${c}: ${CH[c]}`;
@@ -886,11 +905,14 @@ const pickedIdx = ()=>ALL.map((q,i)=>i).filter(i=>ALL[i].faa && picked.has(ALL[i
 
 function syncTray(){
   const n = picked.size;
-  const onPage = !$("#browse").hidden || !$("#setup").hidden;
+  const onPage = !$("#browse").hidden;
   $("#tray").hidden = !n || !onPage;
   document.body.classList.toggle("hastray", !$("#tray").hidden);
   $("#trayCount").innerHTML = `<b>${n}</b> question${n===1?"":"s"} picked`;
-  if(!$("#browse").hidden && bChap!==null){
+  $("#iCount").textContent = n; $("#iCountLbl").textContent = `question${n===1?"":"s"} in your form`;
+  $("#iMake").disabled = !n; $("#iReview").disabled = $("#iClear").disabled = !n;
+  $(".pickrow").hidden = bChap===0;
+  if(!$("#browse").hidden && bChap){
     const inCh = ALL.filter(q=>q.c===bChap && q.faa);
     const k = inCh.filter(q=>picked.has(q.faa)).length;
     $("#bPickAll").disabled = k===inCh.length;
@@ -1007,6 +1029,52 @@ const FORM_BUILDER_GS = "/* Builds a Google Forms quiz from the questions picked
 
 document.addEventListener("keydown", e=>{ if(e.key==="Escape") $("#fm").hidden = true; });
 syncTray();
+
+/* ---------- instructor panel ---------- */
+function bItem(i){
+  const q = ALL[i], pk = q.faa && picked.has(q.faa);
+  return `<div class="rv bitem${pk?" picked":""}" data-faa="${esc(q.faa||"")}">
+      <div class="bhead"><div class="bnum">${q.faa?"FAA "+esc(q.faa):"Warren Tech"}<span class="hint" style="font-family:Barlow,sans-serif;font-size:14px;margin-left:10px">Ch. ${q.c}</span></div>${q.faa?`<label class="pick"><input type="checkbox" data-pick="${esc(q.faa)}" ${pk?"checked":""}><span>Add to form</span></label>`:""}</div>
+      ${q.figs.length?`<div class="rvfigs">${q.figs.map(f=>figImg(f,"rvfig")).join("")}</div>`:""}
+      <p class="q" style="white-space:pre-line">${esc(q.q)}</p>
+      <div class="bopts">${q.o.map((o,k)=>`<div class="bopt${k===q.a?" right":""}"><span class="l">${LET[k]}</span><span>${esc(o)}</span></div>`).join("")}</div>
+      ${q.e?`<div class="ex">${esc(q.e)}</div>`:""}</div>`;
+}
+function openPicked(){
+  bChap = 0;
+  $("#bCh").value = "0";
+  const idx = pickedIdx();
+  $("#bTitle").textContent = "Your form questions";
+  $("#bCount").textContent = idx.length ? `${idx.length} question${idx.length===1?"":"s"}, in the order they'll appear in the form. Uncheck any you don't want.` : "";
+  $("#bList").innerHTML = idx.length ? idx.map(bItem).join("") : `<p class="empty">No questions yet. Add a random set, or tap View on a chapter to pick questions.</p>`;
+  $("#bMsg").textContent = "";
+  show("browse"); syncTray(); window.scrollTo(0,0);
+}
+function iSay(t, bad){ $("#iMsg").textContent = t; $("#iMsg").className = "imsg" + (bad?" bad":""); }
+$("#iRand").onclick = ()=>{
+  const n = +$("#countRange").value;
+  const chs = [...sel];
+  if(!chs.length){ iSay("Select at least one chapter first.", true); return; }
+  const free = pool().filter(i=>sel.has(ALL[i].c) && ALL[i].faa && !picked.has(ALL[i].faa));
+  if(!free.length){ iSay("Every question in those chapters is already in your form.", true); return; }
+  const pools = chs.map(c=>shuffle(free.filter(i=>ALL[i].c===c)));
+  const got = [];
+  while(got.length<n && pools.some(x=>x.length)){
+    for(const x of shuffle(pools.filter(x=>x.length))){ if(got.length>=n) break; got.push(x.pop()); }
+  }
+  got.forEach(i=>picked.add(ALL[i].faa)); savePicked(); syncTray();
+  iSay(`Added ${got.length} question${got.length===1?"":"s"}${got.length<n?" (that's all that were left)":""}.`);
+};
+$("#iAll").onclick = ()=>{
+  if(!sel.size){ iSay("Select at least one chapter first.", true); return; }
+  let k = 0;
+  pool().filter(i=>sel.has(ALL[i].c) && ALL[i].faa).forEach(i=>{ if(!picked.has(ALL[i].faa)){ picked.add(ALL[i].faa); k++; } });
+  savePicked(); syncTray();
+  iSay(k ? `Added ${k} question${k===1?"":"s"}.` : "Those questions are already in your form.", !k);
+};
+$("#iReview").onclick = openPicked;
+$("#iClear").onclick = ()=>$("#trayClear").click();
+$("#iMake").onclick = openFormDialog;
 
 setMode("practice"); show("setup");
 </script>
