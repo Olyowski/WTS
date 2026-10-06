@@ -264,41 +264,6 @@ footer{max-width:1120px;margin:0 auto;padding:0 24px 30px;font-size:13px;color:v
 #bList.hideans .bopt.right{border-color:var(--line);background:transparent}
 #bList.hideans .bopt.right .l{background:var(--tint);color:inherit}
 #bList.hideans .ex{display:none}
-
-/* Pick questions for a Google Form */
-.bhead{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap}
-.pick{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line);background:var(--card);border-radius:99px;padding:5px 14px 5px 10px;font-size:14px;font-weight:700;cursor:pointer;user-select:none;white-space:nowrap}
-.pick input{width:18px;height:18px;accent-color:var(--bright);margin:0}
-.pick:hover{border-color:var(--bright)}
-.bitem.picked .pick{background:var(--deep);border-color:var(--deep);color:#fff}
-.bitem.picked{box-shadow:inset 4px 0 0 var(--bright);padding-left:14px}
-:root[data-theme="dark"] .bitem.picked .pick{background:var(--bright);border-color:var(--bright);color:#140c1c}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .bitem.picked .pick{background:var(--bright);border-color:var(--bright);color:#140c1c}}
-.pickrow{display:flex;align-items:center;gap:8px 12px;flex-wrap:wrap;margin:0 0 6px}
-.pickrow .ghost:disabled{opacity:.45;cursor:not-allowed}
-.pickrow span{font-size:14px;color:var(--muted);font-weight:600}
-.tray{position:fixed;left:0;right:0;bottom:0;z-index:30;background:var(--deep);color:#fff;border-top:4px solid var(--bright);padding:10px 16px calc(env(safe-area-inset-bottom,0px) + 10px)}
-.tray-in{max-width:1120px;margin:0 auto;display:flex;align-items:center;gap:10px 16px;flex-wrap:wrap}
-.tray b{font-family:"Teko",sans-serif;font-size:30px;line-height:1;font-weight:500;margin-right:4px;vertical-align:-3px}
-.tray .tclear{background:none;border:0;color:#fff;opacity:.8;font-weight:600;text-decoration:underline;cursor:pointer;padding:4px}
-.tray .tmake{border:0;border-radius:10px;background:#fff;color:var(--deep);font-family:"Teko",sans-serif;font-size:26px;line-height:1;padding:9px 18px 5px;cursor:pointer}
-.tray .tmake:hover{background:var(--tint)}
-body.hastray main{padding-bottom:110px}
-body.hastray footer{padding-bottom:100px}
-.fmodal{max-width:520px;max-height:calc(100vh - 40px);overflow:auto}
-.fmodal .lbl{display:block;font-weight:600;margin:0 0 6px}
-.fmodal .txt{width:100%;padding:9px 11px;border:1px solid var(--line);border-radius:8px;background:var(--paper);margin:0 0 16px;font-weight:600}
-.fmodal .tog{font-size:15px}
-.fmodal #fmSum{margin:0 0 16px}
-.fmnote{font-size:14px;color:var(--muted);margin:4px 0 14px}
-.fmmsg{font-size:15px;margin:10px 0 0;min-height:0}
-.fmmsg.ok{background:var(--passbg);color:var(--ink);border-left:4px solid var(--pass);padding:10px 12px;border-radius:8px}
-.fmmsg.bad{color:var(--fail)}
-.fmalt{margin-top:16px;border-top:1px solid var(--line);padding-top:12px;font-size:15px}
-.fmalt summary{cursor:pointer;font-weight:700;color:var(--bright)}
-.fmalt ol{margin:8px 0 12px;padding-left:22px;color:var(--muted)}
-.fmalt .cmsg{font-size:14px;margin-left:8px;color:var(--pass);font-weight:600}
-@media print{.tray,.pick,.pickrow{display:none!important}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 </style>
 </head>
@@ -321,7 +286,7 @@ body.hastray footer{padding-bottom:100px}
           <div class="linkbtns"><button type="button" id="allBtn">Select all</button><button type="button" id="noneBtn">Clear</button></div>
         </div>
         <ul class="chlist" id="chlist"></ul>
-        <p class="hint" style="margin:4px 8px 10px">Tap a chapter to add it to your set. Tap <strong>View</strong> to see every question in that chapter in number order.<br><strong>Instructors:</strong> in <strong>View</strong>, check <strong>Add to form</strong> on the questions you want, then tap <strong>Make Google Form</strong>.</p>
+        <p class="hint" style="margin:4px 8px 10px">Tap a chapter to add it to your set. Tap <strong>View</strong> to see every question in that chapter in number order.</p>
       </div>
 
       <div class="card panel">
@@ -379,7 +344,6 @@ body.hastray footer{padding-bottom:100px}
       </div>
       <p class="bmsg" id="bMsg" role="status"></p>
       <p class="hint" id="bCount" style="margin-top:0"></p>
-      <div class="pickrow"><button type="button" class="ghost" id="bPickAll">Add whole chapter to form</button><button type="button" class="ghost" id="bPickNone">Remove chapter from form</button><span id="bPickInfo"></span></div>
       <div id="bList"></div>
     </div>
   </section>
@@ -450,28 +414,6 @@ body.hastray footer{padding-bottom:100px}
 <footer>Questions are organized by FAA question number into the handbook chapters. The FAA Aviation Mechanic General knowledge test is 60 questions in 2 hours with a 70% minimum passing score.</footer>
 
 <div class="ov" id="ov" hidden><div class="modal" role="dialog" aria-modal="true" aria-labelledby="mTitle"><h3 id="mTitle"></h3><p id="mBody"></p><div class="row" id="mRow"></div></div></div>
-
-<div class="tray" id="tray" hidden><div class="tray-in"><span id="trayCount"></span><button type="button" class="tclear" id="trayClear">Clear</button><span class="spacer"></span><button type="button" class="tmake" id="trayMake">Make Google Form</button></div></div>
-
-<div class="ov" id="fm" hidden><div class="modal fmodal" role="dialog" aria-modal="true" aria-labelledby="fmTitle">
-  <h3 id="fmTitle">Make a Google Form</h3>
-  <p id="fmSum"></p>
-  <label class="lbl" for="fmName">Form title</label><input class="txt" id="fmName" autocomplete="off">
-  <label class="tog"><input type="checkbox" id="fmExplain" checked><span>Show students the explanation for each question after they submit</span></label>
-  <label class="tog"><input type="checkbox" id="fmEmail" checked><span>Collect student email addresses</span></label>
-  <label class="tog"><input type="checkbox" id="fmFaa" checked><span>Show FAA question numbers</span></label>
-  <label class="tog"><input type="checkbox" id="fmShuffle"><span>Shuffle the question order for each student</span></label>
-  <p class="fmnote" id="fmBig" hidden>That's a lot of questions. Forms over 150 questions can take Google too long to build, so consider splitting it into two forms.</p>
-  <p class="fmnote" id="fmFirst">The form is made in your own Google Drive. <b>First time only:</b> Google asks you to allow access. Allow it, then come back here and click Create form again.</p>
-  <p class="fmnote" id="fmOff" hidden>The one-click button isn't connected yet. Use the copy-and-paste option below for now.</p>
-  <div class="row"><button type="button" class="btn sec" id="fmCancel">Close</button><button type="button" class="btn pri" id="fmGo">Create form</button></div>
-  <p class="fmmsg" id="fmMsg" role="status"></p>
-  <details class="fmalt" id="fmAlt"><summary>Other way: copy a script into Google</summary>
-    <ol><li>Click <b>Copy script</b>.</li><li>Go to <b>script.google.com</b> and click <b>New project</b>.</li><li>Delete what's there, paste, and click <b>Run</b>. Allow access when asked.</li><li>Your form links show in the Execution log, and the form is in your Google Drive.</li></ol>
-    <button type="button" class="btn sec" id="fmCopy">Copy script</button><span class="cmsg" id="fmCopyMsg" role="status"></span>
-  </details>
-</div></div>
-<form id="fmPost" method="post" target="_blank" hidden><input type="hidden" name="payload" id="fmPayload"></form>
 
 <div class="lb" id="lb" hidden role="dialog" aria-modal="true" aria-label="Figure"><div class="lbbar"><span id="lbCap"></span><button type="button" id="lbClose">Close</button></div><img id="lbImg" alt=""></div>
 
@@ -816,7 +758,6 @@ $("#clearHist").onclick = ()=>modal("Clear history?","This removes the saved sco
 function show(id){
   ["setup","quiz","results","browse"].forEach(s=>$("#"+s).hidden = s!==id);
   if(id==="setup") renderHistory();
-  if(typeof syncTray==="function" && $("#tray")) syncTray();
 }
 function modal(title, body, actions){
   $("#mTitle").textContent = title; $("#mBody").textContent = body;
@@ -842,16 +783,15 @@ function openBrowse(c, findNum){
   $("#bCount").textContent = `${items.length} question${items.length===1?"":"s"}, in FAA question-number order.`;
   $("#bList").innerHTML = items.length ? items.map(i=>{
     const q = ALL[i];
-    const pk = q.faa && picked.has(q.faa);
-    return `<div class="rv bitem${pk?" picked":""}" data-faa="${esc(q.faa||"")}">
-      <div class="bhead"><div class="bnum">${q.faa?"FAA "+esc(q.faa):"Warren Tech"}</div>${q.faa?`<label class="pick"><input type="checkbox" data-pick="${esc(q.faa)}" ${pk?"checked":""}><span>Add to form</span></label>`:""}</div>
+    return `<div class="rv bitem" data-faa="${esc(q.faa||"")}">
+      <div class="bnum">${q.faa?"FAA "+esc(q.faa):"Warren Tech"}</div>
       ${q.figs.length?`<div class="rvfigs">${q.figs.map(f=>figImg(f,"rvfig")).join("")}</div>`:""}
       <p class="q" style="white-space:pre-line">${esc(q.q)}</p>
       <div class="bopts">${q.o.map((o,k)=>`<div class="bopt${k===q.a?" right":""}"><span class="l">${LET[k]}</span><span>${esc(o)}</span></div>`).join("")}</div>
       ${q.e?`<div class="ex">${esc(q.e)}</div>`:""}</div>`;
   }).join("") : `<p class="empty">No questions in this chapter.</p>`;
   $("#bMsg").textContent = "";
-  show("browse"); syncTray();
+  show("browse");
   if(findNum) jumpTo(findNum); else window.scrollTo(0,0);
 }
 function jumpTo(num){
@@ -873,140 +813,6 @@ $("#bCh").addEventListener("change", e=>openBrowse(+e.target.value));
 $("#bAns").addEventListener("change", e=>$("#bList").classList.toggle("hideans", !e.target.checked));
 $("#bGo").onclick = ()=>jumpTo($("#bFind").value);
 $("#bFind").addEventListener("keydown", e=>{ if(e.key==="Enter"){ e.preventDefault(); jumpTo($("#bFind").value); } });
-
-
-/* ---------- build a Google Form from picked questions ---------- */
-/* Paste the Apps Script web app URL (ends in /exec) here to turn on the one-button form. */
-const FORM_APP_URL = "https://script.google.com/a/macros/jeffcoschools.us/s/AKfycbwuvMCTy0Wb-erXCbZQSfvNndzA_kXFD_Jwbwg-bglGW85Od0EtcP-ztFaejTp75DD6gg/exec";
-const BANK_NAME = /Airframe/.test(document.title) ? "Airframe" : "General";
-const PK = "wt-amt-" + BANK_NAME.toLowerCase() + "-picked";
-const picked = new Set((()=>{ try{ return (JSON.parse(localStorage.getItem(PK))||[]).filter(f=>ALL.some(q=>q.faa===f)); }catch(e){ return []; } })());
-const savePicked = ()=>{ try{ localStorage.setItem(PK, JSON.stringify([...picked])); }catch(e){} };
-const pickedIdx = ()=>ALL.map((q,i)=>i).filter(i=>ALL[i].faa && picked.has(ALL[i].faa)).sort(byChapterNumber);
-
-function syncTray(){
-  const n = picked.size;
-  const onPage = !$("#browse").hidden || !$("#setup").hidden;
-  $("#tray").hidden = !n || !onPage;
-  document.body.classList.toggle("hastray", !$("#tray").hidden);
-  $("#trayCount").innerHTML = `<b>${n}</b> question${n===1?"":"s"} picked`;
-  if(!$("#browse").hidden && bChap!==null){
-    const inCh = ALL.filter(q=>q.c===bChap && q.faa);
-    const k = inCh.filter(q=>picked.has(q.faa)).length;
-    $("#bPickAll").disabled = k===inCh.length;
-    $("#bPickNone").disabled = !k;
-    $("#bPickInfo").textContent = k ? `${k} of ${inCh.length} in this chapter picked` : "";
-  }
-}
-function setPick(faa, on){
-  on ? picked.add(faa) : picked.delete(faa);
-  const el = [...document.querySelectorAll("#bList .bitem")].find(d=>d.dataset.faa===faa);
-  if(el){ el.classList.toggle("picked", on); const cb=el.querySelector("[data-pick]"); if(cb) cb.checked=on; }
-}
-$("#bList").addEventListener("change", e=>{
-  const f = e.target.dataset.pick; if(f===undefined) return;
-  setPick(f, e.target.checked); savePicked(); syncTray();
-});
-function pickChapter(on){
-  ALL.filter(q=>q.c===bChap && q.faa).forEach(q=>setPick(q.faa, on));
-  savePicked(); syncTray();
-}
-$("#bPickAll").onclick = ()=>pickChapter(true);
-$("#bPickNone").onclick = ()=>pickChapter(false);
-$("#trayClear").onclick = ()=>modal("Clear your picks?", `This removes all ${picked.size} picked questions from your list.`, [
-  {t:"Keep them", c:"sec"}, {t:"Clear", c:"pri", f:()=>{ [...picked].forEach(f=>setPick(f,false)); savePicked(); syncTray(); }}]);
-
-/* figures are stored as webp; Google Forms needs JPEG or PNG */
-const jpegCache = {};
-function figJpeg(id){
-  if(jpegCache[id]) return jpegCache[id];
-  return jpegCache[id] = new Promise((res, rej)=>{
-    const im = new Image();
-    im.onload = ()=>{
-      const s = Math.min(1, 1400/im.naturalWidth);
-      const c = document.createElement("canvas");
-      c.width = Math.round(im.naturalWidth*s); c.height = Math.round(im.naturalHeight*s);
-      const x = c.getContext("2d"); x.fillStyle="#fff"; x.fillRect(0,0,c.width,c.height); x.drawImage(im,0,0,c.width,c.height);
-      res(c.toDataURL("image/jpeg", .82).split(",")[1]);
-    };
-    im.onerror = ()=>rej(new Error("Figure "+id+" could not be read."));
-    im.src = FIGS[id];
-  });
-}
-
-let fmData = null, fmScript = "";
-const chapList = idx => [...new Set(idx.map(i=>ALL[i].c))].sort((a,b)=>a-b);
-function fmPayload(){
-  const idx = fmData.idx;
-  const chs = chapList(idx);
-  return {
-    title: $("#fmName").value.trim() || `AMT ${BANK_NAME} Quiz`,
-    description: `Warren Tech Aviation. ${idx.length} question${idx.length===1?"":"s"} from the FAA Aviation Mechanic ${BANK_NAME} test bank.\nChapters: ${chs.map(c=>c+". "+CH[c]).join("; ")}`,
-    opts: { explain:$("#fmExplain").checked, collectEmail:$("#fmEmail").checked, faaNums:$("#fmFaa").checked, shuffle:$("#fmShuffle").checked, required:true },
-    questions: idx.map(i=>{ const q=ALL[i]; return {faa:q.faa, c:q.c, q:q.q, o:q.o, a:q.a, e:q.e||"", figs:q.figs||[]}; }),
-    figs: fmData.figs
-  };
-}
-async function openFormDialog(){
-  const idx = pickedIdx();
-  if(!idx.length) return;
-  const chs = chapList(idx);
-  const figIds = [...new Set(idx.flatMap(i=>ALL[i].figs||[]))].filter(id=>FIGS[id]);
-  fmData = {idx, figs:null};
-  $("#fmSum").textContent = `${idx.length} question${idx.length===1?"":"s"} from chapter${chs.length===1?"":"s"} ${chs.join(", ")}` + (figIds.length ? `, with ${figIds.length} figure${figIds.length===1?"":"s"}.` : ".") + " The form is set up as a quiz, 1 point per question, with the answer key filled in.";
-  $("#fmName").value = `AMT ${BANK_NAME} Quiz: Ch. ${chs.join(", ")}`;
-  $("#fmBig").hidden = idx.length <= 150;
-  $("#fmMsg").textContent = ""; $("#fmMsg").className = "fmmsg";
-  $("#fmCopyMsg").textContent = "";
-  const live = !!FORM_APP_URL && !FORM_APP_URL.startsWith("__");
-  $("#fmGo").hidden = !live;
-  $("#fmFirst").hidden = !live;
-  $("#fmAlt").open = !live;
-  $("#fmOff").hidden = live;
-  $("#fmGo").disabled = $("#fmCopy").disabled = true;
-  $("#fmGo").textContent = "Getting figures ready…";
-  $("#fm").hidden = false; $("#fmName").focus();
-  try{
-    const out = {};
-    for(const id of figIds) out[id] = await figJpeg(id);
-    fmData.figs = out;
-    $("#fmGo").disabled = $("#fmCopy").disabled = false;
-    $("#fmGo").textContent = "Create form";
-  }catch(err){
-    $("#fmMsg").textContent = err.message; $("#fmMsg").className = "fmmsg bad";
-  }
-}
-$("#trayMake").onclick = openFormDialog;
-$("#fmCancel").onclick = ()=>{ $("#fm").hidden = true; };
-$("#fm").addEventListener("click", e=>{ if(e.target.id==="fm") $("#fm").hidden = true; });
-
-$("#fmGo").onclick = ()=>{
-  if(!fmData || !fmData.figs) return;
-  const f = $("#fmPost");
-  f.action = FORM_APP_URL;
-  $("#fmPayload").value = JSON.stringify(fmPayload());
-  f.submit();
-  $("#fmMsg").innerHTML = `<b>Your form is being built in a new tab.</b> ${fmData.idx.length > 40 ? "This many questions can take a minute or two." : "It takes a few seconds."} Keep that tab open until it shows your links.`;
-  $("#fmMsg").className = "fmmsg ok";
-};
-
-/* fallback: a self-contained script to paste into script.google.com */
-$("#fmCopy").onclick = async ()=>{
-  if(!fmData || !fmData.figs) return;
-  const p = fmPayload();
-  const text = `/* ${p.title} | built from the Warren Tech AMT ${BANK_NAME} site\n   Click Run (the play button) above. Allow access when Google asks.\n   Your form links appear in the Execution log below, and the form is in your Google Drive. */\n\nfunction makeMyForm() {\n  var form = buildQuizForm_(DATA);\n  Logger.log('Edit your form: ' + form.getEditUrl());\n  Logger.log('Student link: ' + form.getPublishedUrl());\n}\n\n` + FORM_BUILDER_GS + `\nvar DATA = ` + JSON.stringify(p) + `;\n`;
-  let ok = false;
-  try{ await navigator.clipboard.writeText(text); ok = true; }catch(e){
-    const t = document.createElement("textarea"); t.value = text; t.style.position="fixed"; t.style.opacity="0"; document.body.appendChild(t); t.select();
-    try{ ok = document.execCommand("copy"); }catch(e2){} t.remove();
-  }
-  $("#fmCopyMsg").textContent = ok ? "Copied. Now paste it into a new project at script.google.com." : "Your browser blocked copying. Try the Create form button, or another browser.";
-};
-
-const FORM_BUILDER_GS = "/* Builds a Google Forms quiz from the questions picked on the Warren Tech AMT test prep sites. */\nvar LETTERS_ = ['A', 'B', 'C', 'D', 'E', 'F'];\n\nfunction buildQuizForm_(p) {\n  var qs = p.questions || [];\n  if (!qs.length) throw new Error('No questions were picked.');\n  var o = p.opts || {};\n  var figData = p.figs || {};\n\n  var form = FormApp.create(p.title || 'AMT Practice Quiz');\n  form.setIsQuiz(true);\n  form.setProgressBar(true);\n  if (o.collectEmail) form.setCollectEmail(true);\n  if (p.description) form.setDescription(p.description);\n\n  var blobs = {};\n  function figBlob(id) {\n    if (!blobs[id]) blobs[id] = Utilities.newBlob(Utilities.base64Decode(figData[id]), 'image/jpeg', 'Figure ' + id + '.jpg');\n    return blobs[id];\n  }\n  function addFig(id) {\n    if (figData[id]) form.addImageItem().setTitle('Figure ' + id).setImage(figBlob(id));\n  }\n\n  // Shuffling would separate a figure from its question, so when shuffle is on\n  // the figures get their own first page and each question points to it.\n  var figsFirst = !!o.shuffle;\n  if (figsFirst) {\n    var seen = {}, order = [];\n    qs.forEach(function (q) { (q.figs || []).forEach(function (id) { if (!seen[id] && figData[id]) { seen[id] = true; order.push(id); } }); });\n    if (order.length) {\n      form.addSectionHeaderItem().setTitle('Figures').setHelpText('Some questions use these figures. Use the Back button to return here any time.');\n      order.forEach(addFig);\n      form.addPageBreakItem().setTitle('Questions');\n    }\n    form.setShuffleQuestions(true);\n  }\n\n  var lastFigs = '';\n  qs.forEach(function (q) {\n    var figs = (q.figs || []).filter(function (id) { return figData[id]; });\n    if (!figsFirst) {\n      var key = figs.join(',');\n      if (key && key !== lastFigs) figs.forEach(addFig);\n      lastFigs = key;\n    }\n\n    var lines = String(q.q).split(/\\n+/);\n    var title = lines.shift();\n    var help = lines.join('\\n');\n    if (o.faaNums && q.faa) title = '[FAA ' + q.faa + '] ' + title;\n    if (figsFirst && figs.length) help = (help ? help + '\\n' : '') + 'Uses Figure ' + figs.join(' and ') + ' on the first page.';\n\n    var item = form.addMultipleChoiceItem();\n    item.setTitle(title).setPoints(1).setRequired(o.required !== false);\n    if (help) item.setHelpText(help);\n    item.setChoices(q.o.map(function (text, k) { return item.createChoice(LETTERS_[k] + '. ' + text, k === q.a); }));\n    if (o.explain && q.e) {\n      var fb = FormApp.createFeedback().setText(String(q.e).slice(0, 4000)).build();\n      item.setFeedbackForCorrect(fb);\n      item.setFeedbackForIncorrect(fb);\n    }\n  });\n\n  return form;\n}\n";
-
-document.addEventListener("keydown", e=>{ if(e.key==="Escape") $("#fm").hidden = true; });
-syncTray();
 
 setMode("practice"); show("setup");
 </script>
