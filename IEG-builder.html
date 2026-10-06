@@ -66,6 +66,11 @@ main>*{min-width:0}
 .badge{display:inline-block;background:var(--bright);color:#fff;font-size:.74rem;font-weight:700;border-radius:10px;padding:1px 8px;margin-left:6px;vertical-align:1px;font-style:normal}
 .badge.soft{background:var(--line);color:var(--ink)}
 .optlist{max-height:430px;overflow-y:auto;padding-right:4px}
+.opts.four{grid-template-columns:repeat(4,1fr)}
+@media (max-width:520px){.opts.four{grid-template-columns:1fr 1fr}}
+.opts.four .opt{text-align:center}
+.fsec{grid-column:1/-1;background:var(--tint);padding:8px 14px;font-size:.84rem;color:var(--muted);border-top:1px solid var(--line)}
+.fsec b{color:var(--ink)}
 .divider{font-size:.82rem;color:var(--muted);margin:10px 0 2px;font-weight:600}
 
 textarea.big{width:100%;min-height:92px;resize:vertical;background:var(--field);border:1.5px solid var(--line);border-radius:6px;padding:10px 12px;font-size:1.02rem}
@@ -115,6 +120,7 @@ summary{cursor:pointer;font-weight:600;font-size:.92rem;color:var(--deep)}
 @media (max-width:640px){.flabel{border-right:0;border-bottom:1px solid var(--line)}}
 .fbody{padding:8px 12px}
 .fbody textarea{width:100%;min-height:80px;resize:vertical;border:1px solid transparent;border-radius:4px;background:transparent;padding:6px;line-height:1.6;font-size:.96rem;max-width:80ch;display:block}
+#f_title,#f_pts{min-height:44px!important}
 .fbody textarea:hover{border-color:var(--line)}
 .fact{display:flex;gap:8px;align-items:center;justify-content:flex-end}
 .edited{margin-right:auto;font-size:.78rem;color:var(--warn);font-weight:700;display:none}
@@ -293,7 +299,23 @@ ol.next li{margin-bottom:6px}
     <div id="targetWrap" hidden>
       <label class="f" for="ctarget" style="margin-top:0">What percent of students do you want certified?</label>
       <input type="number" id="ctarget" min="5" max="100" value="50">
-      <p class="hint">This is the 20-point target. The 15- and 18-point cutoffs are set below it automatically.</p>
+      <p class="hint" id="ctargetHint">This is the 20-point target. The 16- and 18-point cutoffs are set below it automatically.</p>
+    </div>
+    <label class="f">How many points is this goal worth?</label>
+    <div class="opts four" id="ptsList">
+      <button class="opt" data-pts="20"><b>20</b><small>one goal</small></button>
+      <button class="opt" data-pts="15"><b>15</b><small>two goals</small></button>
+      <button class="opt" data-pts="10"><b>10</b><small>two goals</small></button>
+      <button class="opt" data-pts="5"><b>5</b><small>two goals</small></button>
+    </div>
+    <p class="hint">Your goals must add up to 20 points. One goal is worth 20. Two goals split it: 15 + 5 or 10 + 10.</p>
+    <div id="goalNoWrap" hidden>
+      <label class="f">Which goal is this on the form?</label>
+      <div class="opts two">
+        <button class="opt" data-goalno="1"><b>Goal 1</b></button>
+        <button class="opt" data-goalno="2"><b>Goal 2</b></button>
+      </div>
+      <p class="hint" id="otherGoal"></p>
     </div>
     <label class="f" for="pop">Which students are in this goal?</label>
     <input type="text" id="pop" value="all students enrolled">
@@ -308,11 +330,11 @@ ol.next li{margin-bottom:6px}
     </div>
     <details id="tierBox">
       <summary>Point cutoffs (set for you automatically)</summary>
-      <p class="hint">Percent of students who reach the passing bar on the post-test. Below the 15-point cutoff earns 0.</p>
+      <p class="hint" id="tierHint">Percent of students who reach the passing bar on the post-test. Below the lowest cutoff earns 0.</p>
       <div class="row3" style="margin-top:8px">
-        <div><label class="f" for="t1" style="margin-top:0">15 pts at</label><input type="number" id="t1" min="0" max="100" value="40"></div>
-        <div><label class="f" for="t2" style="margin-top:0">18 pts at</label><input type="number" id="t2" min="0" max="100" value="60"></div>
-        <div><label class="f" for="t3" style="margin-top:0">20 pts at</label><input type="number" id="t3" min="0" max="100" value="80"></div>
+        <div><label class="f" for="t1" style="margin-top:0" id="lt1">16 pts at</label><input type="number" id="t1" min="0" max="100" value="40"></div>
+        <div><label class="f" for="t2" style="margin-top:0" id="lt2">18 pts at</label><input type="number" id="t2" min="0" max="100" value="60"></div>
+        <div><label class="f" for="t3" style="margin-top:0" id="lt3">20 pts at</label><input type="number" id="t3" min="0" max="100" value="80"></div>
       </div>
       <button class="btn ghost small" id="autoTiers" style="margin-top:10px">Reset to automatic</button>
     </details>
@@ -717,7 +739,7 @@ function scoreComp(qt, text, catName){
 
 /* ---------- state ---------- */
 const DEF = () => ({p:null, focus:"", ci:null, xi:null, have:null, dtype:null, scores:"", bar:80, bar2:80, L:[0,0,0,0], bdate:"September 2026", pdate:"October 2026",
-  pop:"all students enrolled", endm:"April 2027", cps:["the end of Quarter 2","the end of Quarter 3"], tiers:[40,60,80], tiersManual:false, mode:null, certI:null, custom:null, certQ:"", cN:"", chave:null, cscores:"", cdate:"September 2026", cpdate:"October 2026", cbar:70, ctarget:50, ai:{}, aiFor:"", tailor:{}, dirty:{}, text:{}});
+  pop:"all students enrolled", endm:"April 2027", cps:["the end of Quarter 2","the end of Quarter 3"], tiers:[40,60,80], tiersManual:false, mode:null, certI:null, custom:null, certQ:"", cN:"", chave:null, cscores:"", cdate:"September 2026", cpdate:"October 2026", cbar:70, ctarget:50, pts:20, goalNo:1, ai:{}, aiFor:"", tailor:{}, dirty:{}, text:{}});
 let state = DEF();
 const KEY="ieg-builder-v2";
 try{ const s=JSON.parse(localStorage.getItem(KEY)||"null"); if(s) state=Object.assign(DEF(),s); if(!state.mode && state.ci!==null) state.mode="comp"; }catch(e){}
@@ -745,6 +767,30 @@ function autoTiers(b){
   const t1=r5(b.pct+10), t2=r5(Math.max(t1+5,b.pct+25)), t3=r5(Math.max(t2+5,b.pct+40));
   return [Math.min(t1,90),Math.min(t2,95),Math.min(t3,100)];
 }
+
+/* ---------- points ---------- */
+// Point values for the three cutoffs, stepped like the form's examples (20/18/16, 10/8/6).
+function tierPts(){ const P=state.pts||20; return P>=10 ? [P-4,P-2,P] : [3,4,5]; }
+function critLine(t1,t2,t3){
+  const [p1,p2,p3]=tierPts();
+  return `${t3}% – 100% = ${p3} points. ${t2}% – ${(t3-0.1).toFixed(1)}% = ${p2} points. ${t1}% – ${(t2-0.1).toFixed(1)}% = ${p1} points. Less than ${t1}% = 0 points.`;
+}
+function shortTitle(t,max){ t=t.replace(/\s+/g," ").trim(); if(t.length<=max) return t; const cut=t.slice(0,max); return cut.slice(0,cut.lastIndexOf(" ")).replace(/[,;:–-]+$/,"")+"…"; }
+function progShort(n){ return n.replace(/\s*\(.*?\)\s*/g," ").trim(); }
+function splitNote(){
+  const P=state.pts||20; if(P>=20) return "";
+  return ` This goal is worth ${P} of my 20 points; my other goal is worth ${20-P}.`;
+}
+function renderPts(){
+  const P=state.pts||20, [p1,p2,p3]=tierPts();
+  document.querySelectorAll("[data-pts]").forEach(b=>b.setAttribute("aria-pressed",String(P===+b.dataset.pts)));
+  document.querySelectorAll("[data-goalno]").forEach(b=>b.setAttribute("aria-pressed",String(state.goalNo===+b.dataset.goalno)));
+  $("goalNoWrap").hidden = P>=20;
+  $("otherGoal").textContent = P<20 ? `Your other goal needs to be worth ${20-P} points. When this one is done, click Start over to build it, then copy it into the Goal ${state.goalNo===1?2:1} boxes.` : "";
+  $("lt1").textContent=`${p1} pts at`; $("lt2").textContent=`${p2} pts at`; $("lt3").textContent=`${p3} pts at`;
+  $("ctargetHint").textContent=`This is the ${p3}-point target. The ${p1}- and ${p2}-point cutoffs are set below it automatically.`;
+}
+function goalPrefix(){ return (state.pts||20)>=20 ? "Goal 1" : `Goal ${state.goalNo}`; }
 
 /* ---------- rendering: steps ---------- */
 function btn(attrs, inner){ return `<button class="opt" ${attrs}>${inner}</button>`; }
@@ -834,16 +880,19 @@ function lockFrom(n){ for(let i=n;i<=6;i++){ $("s"+i).classList.add("locked"); $
 
 /* ---------- rendering: output ---------- */
 const FIELDS = [
+ ["title","Title",""],
  ["goal","Student Growth Goal Statement","to be met by the end of the course/class"],
- ["crit","Success Criteria",""],
- ["base","Beginning / Baseline",""],
- ["prog","Progress Monitoring",""],
- ["end","End of Interval",""],
- ["rat","Points Rationale / Goal Success",""]
+ ["crit","What is your success criteria?","how will you know you successfully met your goal"],
+ ["base","What will you use as your baseline data?",""],
+ ["prog","How will you monitor your progress?","over the course of the year"],
+ ["pts","Assigned Points","pick this option on the form"],
+ ["end","End of Interval","for your records",true],
+ ["rat","Points Rationale","for your records",true]
 ];
+function fieldLabel(k,l){ return (k==="title"?`${goalPrefix()} `:`${goalPrefix()}: `)+l; }
 function buildForm(){
-  $("form").innerHTML = FIELDS.map(([k,l,s])=>`
-   <div class="frow"><div class="flabel">${l}${s?`<small>${s}</small>`:""}</div>
+  $("form").innerHTML = FIELDS.map(([k,l,s,x],i)=>`${x&&!FIELDS[i-1][3]?`<div class="fsec"><b>Not on the form.</b> Keep these for your records and your goal conversation with your coach.</div>`:""}
+   <div class="frow"><div class="flabel"><span id="lab_${k}">${l}</span>${s?`<small>${s}</small>`:""}</div>
     <div class="fbody"><textarea id="f_${k}" aria-label="${l}"></textarea>
      <div class="fact"><span class="edited" id="e_${k}">Edited by you. Changing inputs won't overwrite it.</span>
       <button class="btn ghost small" data-reset="${k}" hidden>Rewrite</button>
@@ -855,6 +904,7 @@ function buildForm(){
     if(r){ state.dirty[r]=false; delete state.text[r]; markDirty(r); renderOut(); save(); }
   });
 }
+function relabel(){ FIELDS.forEach(([k,l])=>{ $("lab_"+k).textContent=fieldLabel(k,l); }); }
 function markDirty(k){ $("e_"+k).classList.toggle("on",!!state.dirty[k]); document.querySelector(`[data-reset="${k}"]`).hidden=!state.dirty[k]; }
 function autosize(t){ t.style.height="auto"; t.style.height=(t.scrollHeight+4)+"px"; }
 
@@ -894,8 +944,11 @@ function renderOut(){
   $("picked").innerHTML = `<b>${esc(prog.name)}</b> › ${esc(cat.name)} › <b>${esc(c.t)}</b>`;
 
   const txt={};
+  txt.title = `${progShort(prog.name)}: ${shortTitle(c.t,60)}`;
+  txt.pts = `${state.pts||20} points`;
   txt.goal = `By ${endm}, at least ${t3}% of ${pop} in ${prog.name} will ${meet} on ${measure} that asks them to ${c.task}. This goal addresses the competency "${c.t}" (${cat.name}).`;
-  txt.crit = `Points are based on the percentage of ${pop} ${meetShort} on the end-of-interval ${isTest?"test":"performance task"}. Less than ${t1}% = 0 pts. ${t1}% – ${(t2-0.1).toFixed(1)}% = 15 pts. ${t2}% – ${(t3-0.1).toFixed(1)}% = 18 pts. ${t3}% – 100% = 20 pts.`;
+  const [p1,p2,p3]=tierPts();
+  txt.crit = `Points are based on the percentage of ${pop} ${meetShort} on the end-of-interval ${isTest?"test":"performance task"}. ${critLine(t1,t2,t3)}`;
   const scale = isTest ? `scored as a percent, with ${bar}% as the passing score` : `scored with a 4-level rubric (criteria: ${listJoin(c.look.map(lc))})`;
   if(b){
     txt.base = isTest
@@ -910,22 +963,22 @@ function renderOut(){
   txt.end = `In ${endm}, students will complete a final ${isTest?"test":"performance task"} that asks them to ${c.task}. It will be ${scale}, the same measure used for the baseline and checkpoints. The percentage of students ${meetShort} will be ${b?`compared to the baseline of ${b.pct}%`:"compared to the baseline"} and used to determine points earned according to the success criteria.`;
   const why = focus ? `This goal grows out of my focus for this year: "${focus}." This competency is a direct, measurable way to work on it. ` : "";
   txt.rat = b
-    ? `${why}At baseline, ${b.pct}% of students met the passing bar. Reaching the 20-point target of ${t3}% requires growth of ${Math.round((t3-b.pct)*10)/10} percentage points, which is rigorous but attainable with a full year of instruction and practice. The 15-point (${t1}%) and 18-point (${t2}%) cutoffs are set above the baseline, so points are earned only for real growth. This competency is part of the ${prog.name} program, and students need it to succeed in later courses and in industry.`
-    : `${why}Point cutoffs are set so that points are earned only for growth above the baseline, with the 20-point target of ${t3}% representing rigorous but attainable growth over a full year. Cutoffs will be confirmed once pre-test data is collected. This competency is part of the ${prog.name} program, and students need it to succeed in later courses and in industry.`;
+    ? `${why}At baseline, ${b.pct}% of students met the passing bar. Reaching the ${p3}-point target of ${t3}% requires growth of ${Math.round((t3-b.pct)*10)/10} percentage points, which is rigorous but attainable with a full year of instruction and practice. The ${p1}-point (${t1}%) and ${p2}-point (${t2}%) cutoffs are set above the baseline, so points are earned only for real growth. This competency is part of the ${prog.name} program, and students need it to succeed in later courses and in industry.${splitNote()}`
+    : `${why}Point cutoffs are set so that points are earned only for growth above the baseline, with the ${p3}-point target of ${t3}% representing rigorous but attainable growth over a full year. Cutoffs will be confirmed once pre-test data is collected. This competency is part of the ${prog.name} program, and students need it to succeed in later courses and in industry.${splitNote()}`;
 
   FIELDS.forEach(([k])=>{ const el=$("f_"+k); el.value = state.dirty[k] ? (state.text[k]??txt[k]) : txt[k]; markDirty(k); autosize(el); });
 
   // flags
   let tf="";
-  if(!(t1<t2 && t2<t3)) tf="Cutoffs should go up: 15 pts < 18 pts < 20 pts.";
-  else if(b && t1<=b.pct) tf=`The 15-point cutoff (${t1}%) is at or below your baseline (${b.pct}%), so points could be earned with no growth.`;
+  if(!(t1<t2 && t2<t3)) tf=`Cutoffs should go up: ${p1} pts < ${p2} pts < ${p3} pts.`;
+  else if(b && t1<=b.pct) tf=`The ${p1}-point cutoff (${t1}%) is at or below your baseline (${b.pct}%), so points could be earned with no growth.`;
   $("tierFlag").hidden=!tf; $("tierFlag").textContent=tf;
   const df=$("dataFlag");
   if(!b){ df.hidden=false; df.textContent = state.have==="yes" ? "Add your pre-test scores in step 5 so the Baseline box shows real numbers." : "No pre-test data yet. The Baseline box describes your plan. Come back and enter scores after you give the pre-test."; }
   else df.hidden=true;
 
   // meter
-  const zones=[[0,t1,"var(--z0)","0"],[t1,t2,"var(--z1)","15"],[t2,t3,"var(--z2)","18"],[t3,100,"var(--z3)","20"]];
+  const zones=[[0,t1,"var(--z0)","0"],[t1,t2,"var(--z1)",p1],[t2,t3,"var(--z2)",p2],[t3,100,"var(--z3)",p3]];
   $("meter").innerHTML = zones.map(([a,z,col,p])=>`<div style="width:${Math.max(0,z-a)}%;background:${col}">${z-a>=8?p+" pts":""}</div>`).join("") + (b?`<span class="needle" style="left:calc(${b.pct}% - 1px)"></span>`:"");
   $("nlabel").textContent = b ? `The black line is your baseline: ${b.pct}% met the bar on the pre-test.` : "Your baseline will show on this bar once you enter pre-test scores.";
 
@@ -945,7 +998,7 @@ function renderOut(){
     steps.push("The cutoffs and every box will update with your real numbers. Then copy each box into the IEG form.");
   } else {
     steps.push("Read each box once and fix anything that doesn't sound like your class. Your edits stay put.");
-    steps.push("Copy each box into the matching box of the IEG form.");
+    steps.push(`Copy each box into the matching ${goalPrefix()} box of the IEG form, top to bottom. The last two boxes aren't on the form.`);
     steps.push(`Save your pre-test and scores. You'll give the same ${isTest?"test":"task"} at ${cps.length?listJoin(cps.map(x=>x.replace("the end of ","end of "))):"your checkpoints"} and in ${esc(endm)}.`);
   }
   steps.push("Check the goal with your coach before you submit it.");
@@ -1038,8 +1091,11 @@ function renderCertOut(){
   $("picked").innerHTML = `<b>${esc(prog.name)}</b> › Industry certification › <b>${esc(name)}</b>${c.listed?"":" (not on the state list)"}`;
 
   const txt={};
+  const [p1,p2,p3]=tierPts();
+  txt.title = `${progShort(prog.name)}: ${shortTitle(name,60)}${/certif|credential|license/i.test(name)?"":" Certification"}`;
+  txt.pts = `${state.pts||20} points`;
   txt.goal = `By ${endm}, at least ${t3}% of ${pop} in ${prog.name} will ${verb} ${full}.`;
-  txt.crit = `Points are based on the percentage of ${pop} who ${verb} the ${cw} by ${endm}, verified by official score reports or certificates. Less than ${t1}% = 0 pts. ${t1}% – ${(t2-0.1).toFixed(1)}% = 15 pts. ${t2}% – ${(t3-0.1).toFixed(1)}% = 18 pts. ${t3}% – 100% = 20 pts.`;
+  txt.crit = `Points are based on the percentage of ${pop} who ${verb} the ${cw} by ${endm}, verified by official score reports or certificates. ${critLine(t1,t2,t3)}`;
   const zero = `At the start of the interval, ${N?`0 of ${N} students`:"no students"} (0%) held the ${cw}.`;
   txt.base = b
     ? `${zero} To measure readiness, students took a practice exam in ${state.cdate}. ${b.met} of ${b.N} students (${b.pct}%) scored at or above the ${bar}% passing score, and the class average was ${b.avg}%. This practice exam score is the readiness baseline used for progress monitoring.`
@@ -1048,16 +1104,16 @@ function renderCertOut(){
   txt.prog = `Students will prepare through instruction aligned to the ${name} exam objectives, hands-on practice, and review. ${cpTxt} Students who reach the passing score on a practice exam will be scheduled to take the certification exam. Students below it will get targeted review on the exam objectives they missed. I will track each student's practice exam scores, exam date, and result.`;
   txt.end = `By ${endm}, all eligible students will have had the opportunity to take the ${name} exam. The number of students who earned the certification, verified by official score reports or certificates, will be divided by the number of ${pop}${N?` (${N})`:""} to find the percentage certified, which determines points earned according to the success criteria.`;
   const listed = c.listed ? `The ${cw} is on Colorado's 2026–27 List of Qualified Credentials, so each student who earns it also counts toward the program's CDIP results. ` : `The ${cw} is industry-recognized in this field, though it is not on Colorado's 2026–27 List of Qualified Credentials. `;
-  txt.rat = `Industry certifications are one of the key outcome measures for CTE programs. ${listed}Because no students currently hold the certification, every student who earns it represents growth. A target of ${t3}% is ambitious but attainable ${b?`given the ${b.pct}% practice exam baseline and `:"with "}a full year of preparation and regular practice exams. The 15-point (${t1}%) and 18-point (${t2}%) cutoffs recognize meaningful progress toward that target.`;
+  txt.rat = `Industry certifications are one of the key outcome measures for CTE programs. ${listed}Because no students currently hold the certification, every student who earns it represents growth. A target of ${t3}% is ambitious but attainable ${b?`given the ${b.pct}% practice exam baseline and `:"with "}a full year of preparation and regular practice exams. The ${p1}-point (${t1}%) and ${p2}-point (${t2}%) cutoffs recognize meaningful progress toward that target.${splitNote()}`;
   FIELDS.forEach(([k])=>{ const el=$("f_"+k); el.value = state.dirty[k] ? (state.text[k]??txt[k]) : txt[k]; markDirty(k); autosize(el); });
 
-  let tf=""; if(!(t1<t2 && t2<t3)) tf="Cutoffs should go up: 15 pts < 18 pts < 20 pts.";
+  let tf=""; if(!(t1<t2 && t2<t3)) tf=`Cutoffs should go up: ${p1} pts < ${p2} pts < ${p3} pts.`;
   $("tierFlag").hidden=!tf; $("tierFlag").textContent=tf;
   const df=$("dataFlag");
   if(!b){ df.hidden=false; df.textContent = "No practice exam scores yet. The Baseline box describes your plan. Come back and paste scores after the practice exam."; }
   else df.hidden=true;
 
-  const zones=[[0,t1,"var(--z0)","0"],[t1,t2,"var(--z1)","15"],[t2,t3,"var(--z2)","18"],[t3,100,"var(--z3)","20"]];
+  const zones=[[0,t1,"var(--z0)","0"],[t1,t2,"var(--z1)",p1],[t2,t3,"var(--z2)",p2],[t3,100,"var(--z3)",p3]];
   $("meter").innerHTML = zones.map(([a,z,col,p])=>`<div style="width:${Math.max(0,z-a)}%;background:${col}">${z-a>=8?p+" pts":""}</div>`).join("") + (b?`<span class="needle" style="left:calc(${b.pct}% - 1px)"></span>`:"");
   $("nlabel").textContent = b ? `Certified now: 0%. The black line shows ${b.pct}% passing the practice exam, a sign of how many are close.` : "Certified now: 0%. Every student who earns it moves the class up this bar.";
 
@@ -1072,12 +1128,12 @@ function renderCertOut(){
   const steps=[];
   if(!b) steps.push(`Give a practice exam by ${esc(state.cpdate)}, then come back, choose <b>Yes, I have scores</b>, and paste them.`);
   steps.push("Check the exam details: cost or vouchers, where students test, and any age or eligibility rules. Adjust \"Which students are in this goal?\" to count only eligible students.");
-  steps.push("Read each box once, fix anything that doesn't sound like your class, then copy each box into the IEG form.");
+  steps.push(`Read each box once, fix anything that doesn't sound like your class, then copy each box into the matching ${goalPrefix()} box of the IEG form. The last two boxes aren't on the form.`);
   steps.push("Save every practice exam score and every official score report or certificate. That's your evidence at the end.");
   steps.push("Check the goal with your coach before you submit it.");
   $("nextSteps").innerHTML = steps.map(s=>`<li>${s}</li>`).join("");
 }
-function render(){ renderSteps(); renderOut(); save(); }
+function render(){ renderSteps(); renderPts(); relabel(); renderOut(); save(); }
 
 function copyText(t,btnEl){
   const done=()=>{ const o=btnEl.textContent; btnEl.textContent="Copied"; btnEl.classList.add("copied"); setTimeout(()=>{ btnEl.textContent=o; btnEl.classList.remove("copied"); },1400); };
@@ -1103,6 +1159,8 @@ document.addEventListener("click",e=>{
   else if(t.id==="useCustom"){ const n=$("cName").value.trim(); if(!n){ $("cName").focus(); return; } state.custom={name:n, org:$("cOrg").value.trim()}; state.certI="custom"; state.dirty={}; state.text={}; render(); }
   else if(t.dataset.have){ state.have=t.dataset.have; render(); }
   else if(t.dataset.dtype){ state.dtype=t.dataset.dtype; render(); }
+  else if(t.dataset.pts){ state.pts=+t.dataset.pts; if(state.pts>=20) state.goalNo=1; delete state.dirty.pts; render(); }
+  else if(t.dataset.goalno){ state.goalNo=+t.dataset.goalno; render(); }
 });
 $("focus").addEventListener("input",e=>{ state.focus=e.target.value; clearTimeout(window._ft); window._ft=setTimeout(render,250); });
 [["scores","scores"],["bdate","bdate"],["pdate","pdate"],["pop","pop"],["endm","endm"]].forEach(([id,k])=>$(id).addEventListener("input",e=>{ state[k]=e.target.value; render(); }));
@@ -1117,7 +1175,7 @@ $("bar2").addEventListener("input",e=>{ state.bar2=Math.min(100,Math.max(1,+e.ta
 $("autoTiers").addEventListener("click",()=>{ state.tiersManual=false; render(); });
 document.querySelectorAll(".cp").forEach(cb=>cb.addEventListener("change",()=>{ state.cps=[...document.querySelectorAll(".cp:checked")].map(x=>x.value); render(); }));
 $("rewriteAll").addEventListener("click",()=>{ state.dirty={}; state.text={}; render(); });
-$("copyAll").addEventListener("click",e=>copyText(FIELDS.map(([k,l])=>`${l}\n${$("f_"+k).value}`).join("\n\n"),e.target));
+$("copyAll").addEventListener("click",e=>copyText(FIELDS.map(([k,l])=>`${fieldLabel(k,l)}\n${$("f_"+k).value}`).join("\n\n"),e.target));
 $("startOver").addEventListener("click",()=>{ if(confirm("Clear everything and start a new IEG?")){ state=DEF(); syncInputs(); render(); window.scrollTo({top:0}); } });
 $("undoTailor").addEventListener("click",()=>{ const c=compInfo(state.p,state.ci,state.xi); delete state.tailor[c.key]; render(); });
 
