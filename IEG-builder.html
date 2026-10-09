@@ -644,7 +644,12 @@ const CERT_SUGGEST = {
   audio:["AVID Certified Pro Tool User","Dante Level 2 Certification"],
   video:["Adobe Certified Professional: Digital Video Using Premiere Pro (Pr)","Adobe Certified Professional: Visual Effects & Motion Graphics Using Adobe After Effects (Ae)"]
 };
+/* Suggested goals that aren't on the state list, with preset numbers */
+const CERT_EXTRA = {
+  amts:[{name:"FAA Aviation Mechanic General (AMG) Knowledge Test", org:"Federal Aviation Administration (FAA)", target:70, bar:70}]
+};
 const CERT_WARN = {
+  "FAA Aviation Mechanic General (AMG) Knowledge Test":"Goal preset: 70% of students pass the FAA General written test with a score of 70% or higher (the FAA passing score). Students need written authorization from the school or the FAA before they can sit for the test, so count only students who will be authorized by the deadline.",
   "Aircraft Mechanic":"The FAA mechanic certificate requires students to be 18 and to complete an approved program or documented experience, so it usually can't be earned within one high school year. Consider a goal on the steps toward it, such as passing the FAA General written test if your program is set up for that.",
   "Drone Pilot Certification":"The FAA Part 107 test requires students to be at least 16. Count only students who are old enough by the exam date in \"Which students are in this goal?\"",
   "FAA Private Pilot Airman Knowledge Test":"Check the current FAA age and endorsement requirements for the knowledge test, and count only eligible students in the goal."
@@ -1046,8 +1051,10 @@ function renderCertSteps(){
   const item=i=>{ const c=CERTS[i]; return btn(`data-cert="${i}" aria-pressed="${state.certI===i}"`, `<b>${esc(c[2])}</b><small>${esc(c[3].replace(/\s*\/\s*Note:.*$/,""))} · ${esc(c[1])}</small>`); };
   let html="";
   const sugI=sug.map(n=>CERTS.findIndex(c=>c[2]===n)).filter(i=>i>=0);
+  const extra=hasP?(CERT_EXTRA[PROGRAMS[state.p].id]||[]):[];
+  const xHtml=extra.map((x,i)=>(state.certI==="custom"&&state.custom&&state.custom.name===x.name)?"":btn(`data-xcert="${i}" aria-pressed="false"`,`<b>${esc(x.name)}</b><small>${esc(x.org)} · ${x.target}% of students pass with ${x.bar}%</small>`)).join("");
   if(!q){
-    if(sugI.length) html+=`<div class="divider">Suggested for ${esc(PROGRAMS[state.p]?.name||"your class")}</div>`+sugI.map(item).join("");
+    if(sugI.length||xHtml) html+=`<div class="divider">Suggested for ${esc(PROGRAMS[state.p]?.name||"your class")}</div>`+xHtml+sugI.map(item).join("");
     html+=`<div class="divider">Search above to see all ${CERTS.length} approved certifications</div>`;
   } else {
     const words=q.split(/\s+/);
@@ -1092,11 +1099,11 @@ function renderCertOut(){
 
   const txt={};
   const [p1,p2,p3]=tierPts();
-  txt.title = `${progShort(prog.name)}: ${shortTitle(name,60)}${/certif|credential|license/i.test(name)?"":" Certification"}`;
+  txt.title = `${progShort(prog.name)}: ${shortTitle(name,60)}${/certif|credential|license|test|exam/i.test(name)?"":" Certification"}`;
   txt.pts = `${state.pts||20} points`;
-  txt.goal = `By ${endm}, at least ${t3}% of ${pop} in ${prog.name} will ${verb} ${full}.`;
-  txt.crit = `Points are based on the percentage of ${pop} who ${verb} the ${cw} by ${endm}, verified by official score reports or certificates. ${critLine(t1,t2,t3)}`;
-  const zero = `At the start of the interval, ${N?`0 of ${N} students`:"no students"} (0%) held the ${cw}.`;
+  txt.goal = `By ${endm}, at least ${t3}% of ${pop} in ${prog.name} will ${verb} ${full}${verb==="pass"?` with a score of ${bar}% or higher`:""}.`;
+  txt.crit = `Points are based on the percentage of ${pop} who ${verb} the ${cw}${verb==="pass"?` with a score of ${bar}% or higher`:""} by ${endm}, verified by official score reports or certificates. ${critLine(t1,t2,t3)}`;
+  const zero = `At the start of the interval, ${N?`0 of ${N} students`:"no students"} (0%) ${verb==="pass"?"had passed":"held"} the ${cw}.`;
   txt.base = b
     ? `${zero} To measure readiness, students took a practice exam in ${state.cdate}. ${b.met} of ${b.N} students (${b.pct}%) scored at or above the ${bar}% passing score, and the class average was ${b.avg}%. This practice exam score is the readiness baseline used for progress monitoring.`
     : `${zero} To measure readiness, students will take a practice exam in ${state.cpdate}. The percentage scoring at or above the ${bar}% passing score and the class average will be recorded as the readiness baseline used for progress monitoring.`;
@@ -1155,6 +1162,7 @@ document.addEventListener("click",e=>{
   else if(t.dataset.xi!==undefined){ const xi=+t.dataset.xi; if(xi!==state.xi){ state.xi=xi; state.dirty={}; state.text={}; } render(); $("s5").scrollIntoView({behavior:"smooth",block:"nearest"}); }
   else if(t.dataset.mode){ if(t.dataset.mode!==state.mode){ state.mode=t.dataset.mode; state.tiersManual=false; state.dirty={}; state.text={}; } render(); }
   else if(t.dataset.cert!==undefined){ const v=t.dataset.cert==="custom"?"custom":+t.dataset.cert; if(v!==state.certI){ state.certI=v; state.dirty={}; state.text={}; } render(); }
+  else if(t.dataset.xcert!==undefined){ const x=(CERT_EXTRA[PROGRAMS[state.p].id]||[])[+t.dataset.xcert]; if(x){ state.custom={name:x.name, org:x.org}; state.certI="custom"; state.ctarget=x.target; state.cbar=x.bar; state.tiersManual=false; state.dirty={}; state.text={}; $("ctarget").value=x.target; $("cbar").value=x.bar; } render(); }
   else if(t.dataset.chave){ state.chave=t.dataset.chave; render(); }
   else if(t.id==="useCustom"){ const n=$("cName").value.trim(); if(!n){ $("cName").focus(); return; } state.custom={name:n, org:$("cOrg").value.trim()}; state.certI="custom"; state.dirty={}; state.text={}; render(); }
   else if(t.dataset.have){ state.have=t.dataset.have; render(); }
