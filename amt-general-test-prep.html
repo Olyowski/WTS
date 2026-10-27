@@ -206,7 +206,7 @@ kbd{font:600 12px/1 "Barlow",sans-serif;border:1px solid var(--line);border-bott
 .empty{color:var(--muted);padding:10px 0}
 
 /* Modal */
-.ov{position:fixed;inset:0;background:rgba(20,5,35,.55);display:flex;align-items:center;justify-content:center;padding:20px;z-index:50}
+.ov{position:fixed;top:0;right:0;bottom:0;left:0;background:rgba(20,5,35,.55);display:flex;align-items:center;justify-content:center;padding:20px;z-index:50}
 .modal{background:var(--card);border-radius:16px;max-width:440px;width:100%;padding:24px;border:1px solid var(--line)}
 .modal h3{font-family:"Teko",sans-serif;font-weight:500;font-size:32px;line-height:1;margin:0 0 10px}
 .modal p{margin:0 0 18px;color:var(--muted)}
@@ -707,7 +707,7 @@ function finish(timeUp){
   ].map(([l,v])=>`<div class="stat"><b>${v}</b>${l}</div>`).join("");
 
   const by = {};
-  S.qs.forEach((q,i)=>{ by[q.c] ??= {t:0,c:0}; by[q.c].t++; if(S.ans[i]===q.correct) by[q.c].c++; });
+  S.qs.forEach((q,i)=>{ if(!by[q.c]) by[q.c] = {t:0,c:0}; by[q.c].t++; if(S.ans[i]===q.correct) by[q.c].c++; });
   $("#bars").innerHTML = Object.keys(by).sort((a,b)=>a-b).map(c=>{
     const b=by[c], p=Math.round(b.c/b.t*100), col = p>=PASS?"var(--pass)":"var(--fail)";
     return `<div class="bar"><span><strong>${c}.</strong> ${esc(CH[c])}</span><span class="track"><i style="width:${p}%;background:${col}"></i></span><span class="pct" style="color:${col}">${b.c}/${b.t}</span></div>`;
